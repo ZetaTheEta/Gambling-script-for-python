@@ -1,0 +1,197 @@
+
+import time
+import random
+import json
+import os
+
+FILENAME = "value.json"
+
+if not os.path.exists(FILENAME):    # not my code, AI
+  with open(FILENAME, "w") as file:
+    json.dump({"value": 500}, file)
+
+def get_value():
+  with open(FILENAME, "r") as file:
+    return json.load(file)["value"]
+
+
+def update_value(new_value):
+  with open(FILENAME, "w") as file:
+    json.dump({"value": new_value}, file)
+
+
+#value = get_value()
+
+
+
+
+greetings = [f"Hello", "Salutations", "Hi", "Greetings"]
+
+
+
+
+
+
+def spin():
+  value = get_value()  # value = bank account
+  if value == 0:
+    print("Debug is receiving a 0 value from the file this may be a glitch") # doesn't reset value in Google Colab idk, go to Online Python
+    return
+  while value > 0:
+    try:
+      player_input = int(input("Choose the amount of money you want to deposit: "))  # needs int command to use try command
+    except ValueError:  #If entered value isn't a number or whole number then will prompt again
+      print("Enter a number")
+      continue
+
+    if player_input <= 0:    #less than or equal to
+        print("Cannot be less than 1")
+        continue
+
+    elif player_input > value:
+      print(f"You can't deposit more than your current bank account amount({value} dollars) ")
+      continue
+
+    slot1 = [f"7","6", "5", "4", "3", "2", "1", "7", "7" ]  # Added more 7's to increase chances of winning (777)
+    slot2 = [f"7","6", "5", "4", "3", "2", "1", "7", "7" ]
+    slot3 = [f"7","6", "5", "4", "3", "2", "1", "7", "7" ]
+
+    spins = random.choice(slot1)  # randomly selected by computer (no percentage fix)
+    spins1 = random.choice(slot2)
+    spins2 = random.choice(slot3)
+
+    print("Spinning", end="")
+    time.sleep(0.5)
+    print(".", end="")
+    time.sleep(0.5)
+    print(".", end="")
+    time.sleep(0.5)
+    print(".")
+    time.sleep(0.5)
+    print(spins, end="")
+    time.sleep(0.5)
+    print(spins1, end="")
+    time.sleep(0.5)
+    print(spins2)
+
+    value -= player_input # subtracts the current value (bank money) and player_input (how much money you bet) together
+    update_value(value) # updates your current value so you will have reduced money the next time you spin.
+
+    if spins == "7" and spins1 == "7" and spins2 == "7":
+        print("You won!")
+        if player_input <= 50:     # If entered value is less than or equal to 50, then 7,000 dollars will be granted (lower risk)
+          value += 7000            # Adds the current value (bank money) and 7,000 together
+          update_value(value)
+          time.sleep(0.5)
+          winner_prompt = input("Do you wish to spin again? yes/no ")
+          if (winner_prompt.lower() == "Yes".lower()):
+            print(f"You now have {value} dollars in your bank account")
+            time.sleep(1)
+            continue
+        elif player_input >= 50:  # If entered value is more than 50 or equal to 50, then 14,000 dollars will be granted (higher risk)
+          value += 14000   # Adds the current value (bank money) + 14,000
+          update_value(value)
+          time.sleep(0.5)
+          winner_prompt1 = input("Do you wish to spin again? yes/no ")
+          if (winner_prompt1.lower() == "Yes".lower()):
+            print(f"You now have {value} dollars in your bank account")
+            time.sleep(1)
+            continue
+          else:
+            menu() # brings you back to main menu
+    else:
+      while True:
+        ask2 = input("Spin again? yes/no: ")
+        if (ask2.lower() == "Yes".lower()):
+          print(f"{value} dollars left in your bank account")
+          break
+        elif (ask2.lower() == "No".lower()):
+            print("Game ended, going back to menu")
+            menu()
+        else:
+            print("Invalid option (type yes or no)")
+
+
+  print("No more money :( restart program")   # add restart/exit option
+  quit() # stops/crashes the program
+
+
+
+
+def menu():
+    value = get_value()
+    print(f"{(random.choice(greetings))}, user")
+    time.sleep(1)
+    ask = input("Spin, draw, or deposit: ")
+    if (ask.lower() == "Spin".lower()):
+        spin()
+    elif (ask.lower() == "Draw".lower()):
+        while (ask.lower() == "Draw".lower()):
+            try:
+                draw = int(input(f"How much money do you want to draw ({value} dollars left in your bank account): "))
+            except ValueError:
+                print("Enter a number")
+                continue # Start-over from beginning command (while)
+            if draw <= 0:
+                print("Cannot withdraw 0 dollars")
+                continue
+            elif value == 0:
+                print("No more money in your bank account):")
+                quit()
+            elif draw > value:
+                print(f"Cannot withdraw more money than your current bank account: {value} dollars")
+                continue
+
+            print(f"Successfully withdrew {draw} dollars")
+            value -= draw
+            update_value(value)
+            time.sleep(1)
+            menu()
+    else:
+      if (ask.lower() != "Draw".lower()) and (ask.lower() != "Spin".lower()) and (ask.lower() != "Deposit".lower()): # != sign means "not equal to"
+        print("Invalid option")
+        time.sleep(1)
+        menu() # loops back to menu (starting point) until the correct option is put in
+
+
+
+    if (ask.lower() == "Deposit".lower()):
+      while (ask.lower() == "Deposit".lower()):
+        error_ask = input("You have already deposited money, type 'Spin' again if you wish to spin or menu to go back ")
+        if (error_ask.lower() == "Spin".lower()):
+          spin()
+        elif (error_ask.lower() == "Menu".lower()):
+          print("Going back to menu ")
+          menu()
+        else:
+          print("Invalid option")
+          continue
+
+
+
+
+
+
+
+def AI_greeting():
+  print(f"{(random.choice(greetings))}, user")
+  time.sleep(1)
+  ask = input("Spin, draw, or deposit: ")
+  if (ask.lower() == "Spin".lower()):
+    print("You cannot spin yet without depositing any money")
+    time.sleep(1)
+    AI_greeting()
+  elif ask.lower() == "deposit":
+    print("Rules: Spin 777 in order to win big money (7,000 dollars!) Depositing more than 50 on your next win will double your price! ")
+    spin()
+  elif ask.lower() == "draw":
+    print("You have nothing to draw yet because you haven't deposited any money")
+    time.sleep(1)
+    AI_greeting()
+  else:
+    print("invalid option")
+    time.sleep(1)
+    AI_greeting()
+
+
+AI_greeting()
